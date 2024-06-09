@@ -13,7 +13,7 @@
 
     <!--项目的基本设置-->
     <groupId>com.pandaer</groupId>
-    <artifactId>Spring-Project-Template</artifactId>
+    <artifactId>m-api-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
@@ -109,8 +109,6 @@
                 <artifactId>spring-boot-starter-aop</artifactId>
                 <version>${boot.version}</version>
             </dependency>
-
-
 
         </dependencies>
     </dependencyManagement>

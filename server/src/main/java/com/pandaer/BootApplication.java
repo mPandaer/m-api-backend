@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @EnableAspectJAutoProxy
-@OpenAPIDefinition(info = @Info(title = "Spring模板项目", version = "1.0", description = "Spring模板项目"))
+@OpenAPIDefinition(info = @Info(title = "API开放平台", version = "1.0", description = "API开放平台"))
 @MapperScan("com.pandaer.server.modules.*.mapper")
 @SpringBootApplication
 public class BootApplication {

@@ -46,6 +46,13 @@ public class User implements Serializable {
 
 
     /**
+     * 用户角色
+     */
+    @TableField(value = "user_role")
+    private String userRole;
+
+
+    /**
      * 用户删除标识 0--表示未删除 1--已删除
      */
     @TableField(value = "is_delete")
@@ -56,6 +63,7 @@ public class User implements Serializable {
      */
     @TableField(value = "create_time")
     private LocalDateTime createTime;
+
 
     /**
      * 更新时间
