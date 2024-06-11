@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<ComResp> handleAuthException(AuthException exception) {
         log.error("权限异常: ",exception);
-        ComResp error = ComResp.error(DefaultRespCode.ERROR);
+        ComResp error = ComResp.error(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 

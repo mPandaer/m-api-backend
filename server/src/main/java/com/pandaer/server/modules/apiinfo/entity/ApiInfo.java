@@ -10,10 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Data;
 
-/**
- * 
- * @TableName api_info
- */
+
 @TableName(value ="api_info")
 @Data
 public class ApiInfo implements Serializable {

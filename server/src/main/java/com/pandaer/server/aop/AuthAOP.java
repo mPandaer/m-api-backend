@@ -1,8 +1,10 @@
 package com.pandaer.server.aop;
 
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
+import com.pandaer.basic.exception.BusinessException;
 import com.pandaer.basic.exception.FrameworkException;
 import com.pandaer.basic.resp.DefaultRespCode;
 import com.pandaer.basic.tools.JwtTool;
@@ -63,6 +65,9 @@ public class AuthAOP {
 
     private boolean validAuth(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
+        if (StrUtil.isEmpty(token)) {
+            throw new AuthException(401,"Token异常");
+        }
         return JwtTool.validToken(token);
     }
 }
