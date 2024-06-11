@@ -1,13 +1,28 @@
 package com.pandaer.server.modules.apiinfo.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.pandaer.server.modules.apiinfo.entity.ApiInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pandaer.server.modules.apiinfo.po.AddApiInfoPO;
+import com.pandaer.server.modules.apiinfo.po.PageQueryApiInfoPO;
+import com.pandaer.server.modules.apiinfo.po.UpdateApiInfoPO;
+import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
 
 /**
-* @author pandaer
-* @description 针对表【api_info】的数据库操作Service
-* @createDate 2024-06-11 08:53:13
-*/
+ * API接口信息服务
+ */
 public interface ApiInfoService extends IService<ApiInfo> {
+
+    /**
+     * 增加接口信息
+     * @param po
+     */
+    void addApiInfo(AddApiInfoPO po);
+
+    void updateApiInfo(UpdateApiInfoPO po);
+
+    void deleteApiInfo(String apiId);
+
+    IPage<ApiInfoVO> pageQueryApiInfo(PageQueryApiInfoPO po);
 
 }

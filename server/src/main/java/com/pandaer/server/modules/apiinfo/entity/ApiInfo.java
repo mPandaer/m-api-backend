@@ -3,6 +3,8 @@ package com.pandaer.server.modules.apiinfo.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -51,22 +53,25 @@ public class ApiInfo implements Serializable {
     private String apiDesc;
 
     /**
+     * JSON格式的字符串
      * 接口请求头信息 具体格式 [{name:xxxx,value:xxx}]
      */
     @TableField(value = "api_req_header")
-    private Object apiReqHeader;
+    private String apiReqHeader;
 
     /**
+     * JSON格式的字符串
      * 接口请求参数信息 具体格式 [{name:xxx,type:xxx,required:true,desc:xxxx}]
      */
     @TableField(value = "api_req_params")
-    private Object apiReqParams;
+    private String apiReqParams;
 
     /**
+     * JSON格式的字符串
      * 接口响应体说明 [{name:xxxx,type:xxx,desc:xxx}]
      */
     @TableField(value = "api_resp_desc")
-    private Object apiRespDesc;
+    private String apiRespDesc;
 
     /**
      * 响应体结果示例
@@ -86,6 +91,7 @@ public class ApiInfo implements Serializable {
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
