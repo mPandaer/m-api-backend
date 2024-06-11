@@ -6,7 +6,9 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+@EnableTransactionManagement
 @EnableAspectJAutoProxy
 @OpenAPIDefinition(info = @Info(title = "API开放平台", version = "1.0", description = "API开放平台"))
 @MapperScan("com.pandaer.server.modules.*.mapper")

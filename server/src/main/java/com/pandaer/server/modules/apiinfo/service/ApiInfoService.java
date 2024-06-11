@@ -21,7 +21,7 @@ public interface ApiInfoService extends IService<ApiInfo> {
 
     void updateApiInfo(UpdateApiInfoPO po);
 
-    void deleteApiInfo(String apiId);
+    void deleteApiInfo(String apiIds);
 
     IPage<ApiInfoVO> pageQueryApiInfo(PageQueryApiInfoPO po);
 

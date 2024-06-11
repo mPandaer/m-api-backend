@@ -15,6 +15,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * 全局异常处理器
@@ -73,6 +74,13 @@ public class GlobalExceptionHandler {
         log.error("未处理异常: ",exception);
         ComResp error = ComResp.error(DefaultRespCode.ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler({NoResourceFoundException.class})
+    public ResponseEntity<ComResp> handleNoResourceFoundException(NoResourceFoundException exception) {
+        log.error("资源不存在异常: ",exception);
+        ComResp error = ComResp.error("资源不存在");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
 

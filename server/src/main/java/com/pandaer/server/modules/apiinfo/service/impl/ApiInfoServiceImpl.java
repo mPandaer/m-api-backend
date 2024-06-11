@@ -24,7 +24,9 @@ import com.pandaer.server.modules.apiinfo.mapper.ApiInfoMapper;
 import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -97,11 +99,13 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
     /**
      * 逻辑删除接口信息
      * 根据apiId删除接口信息
-     * @param apiId
+     * @param apiIds
      */
+    @Transactional
     @Override
-    public void deleteApiInfo(String apiId) {
-        if (!removeById(apiId)) {
+    public void deleteApiInfo(String apiIds) {
+        List<String> idList = Arrays.stream(apiIds.split(",")).toList();
+        if (!removeBatchByIds(idList)) {
             throw new BusinessException(DELETE_API_INFO_FAIL);
         }
     }
@@ -116,13 +120,13 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
             query.eq(ApiInfo::getApiId,po.getApiId());
         }
         if (ObjUtil.isNotEmpty(po.getApiName())) {
-            query.eq(ApiInfo::getApiName,po.getApiName());
+            query.likeRight(ApiInfo::getApiName,po.getApiName());
         }
         Page<ApiInfo> page = new Page<>();
         page.setCurrent(po.getCurrentPage());
         page.setSize(po.getPageSize());
 
-        Page<ApiInfo> infoPage = page(page);
+        Page<ApiInfo> infoPage = page(page,query);
         List<ApiInfoVO> voList = infoPage.getRecords().stream().map(item -> BeanUtil.toBean(item, ApiInfoVO.class)).toList();
 
         Page<ApiInfoVO> voPage = new Page<>();

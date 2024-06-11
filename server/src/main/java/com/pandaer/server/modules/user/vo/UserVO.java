@@ -23,10 +23,12 @@ public class UserVO {
     @Schema(description = "用户头像链接")
     private String userAvatarUrl;
 
+    @Schema(description = "用户角色")
+    private String userRole;
+
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Schema(description = "用户创建时间")
     private LocalDateTime createTime;
-
 
 }

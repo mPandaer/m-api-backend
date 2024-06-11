@@ -10,10 +10,7 @@ import com.pandaer.web.resp.ComResp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "API信息管理服务",description = "提供API接口信息的增删改查服务")
 @RestController
@@ -25,22 +22,22 @@ public class ApiInfoController {
 
     @Operation(summary = "添加接口信息")
     @PostMapping("/add")
-    public ComResp addApiInfo(AddApiInfoPO po) {
+    public ComResp addApiInfo(@RequestBody AddApiInfoPO po) {
         apiInfoService.addApiInfo(po);
         return ComResp.success();
     }
 
     @Operation(summary = "更新接口信息")
     @PostMapping("/update")
-    public ComResp updateApiInfo(UpdateApiInfoPO po) {
+    public ComResp updateApiInfo(@RequestBody UpdateApiInfoPO po) {
         apiInfoService.updateApiInfo(po);
         return ComResp.success();
     }
 
     @Operation(summary = "删除接口信息")
     @GetMapping("/delete")
-    public ComResp deleteApiInfo(String apiId) {
-        apiInfoService.deleteApiInfo(apiId);
+    public ComResp deleteApiInfo(String apiIds) {
+        apiInfoService.deleteApiInfo(apiIds);
         return ComResp.success();
     }
 
