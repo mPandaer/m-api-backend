@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandaer.server.modules.apiinfo.mapper.ApiInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.pandaer.server.modules.apiinfo.entity.ApiInfo">
+            <id property="apiId" column="api_id" jdbcType="VARCHAR"/>
+            <result property="apiName" column="api_name" jdbcType="VARCHAR"/>
+            <result property="apiUrl" column="api_url" jdbcType="VARCHAR"/>
+            <result property="apiReqMethod" column="api_req_method" jdbcType="VARCHAR"/>
+            <result property="apiRespType" column="api_resp_type" jdbcType="VARCHAR"/>
+            <result property="apiDesc" column="api_desc" jdbcType="VARCHAR"/>
+            <result property="apiReqHeader" column="api_req_header" jdbcType="OTHER"/>
+            <result property="apiReqParams" column="api_req_params" jdbcType="OTHER"/>
+            <result property="apiRespDesc" column="api_resp_desc" jdbcType="OTHER"/>
+            <result property="apiRespSample" column="api_resp_sample" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        api_id,api_name,api_url,
+        api_req_method,api_resp_type,api_desc,
+        api_req_header,api_req_params,api_resp_desc,
+        api_resp_sample,create_time,update_time
+    </sql>
+</mapper>
