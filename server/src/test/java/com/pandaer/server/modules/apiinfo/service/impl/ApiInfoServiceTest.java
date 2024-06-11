@@ -1,7 +1,12 @@
 package com.pandaer.server.modules.apiinfo.service.impl;
 
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.pandaer.server.modules.apiinfo.po.AddApiInfoPO;
+import com.pandaer.server.modules.apiinfo.po.PageQueryApiInfoPO;
+import com.pandaer.server.modules.apiinfo.po.UpdateApiInfoPO;
 import com.pandaer.server.modules.apiinfo.service.ApiInfoService;
+import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -116,13 +121,24 @@ class ApiInfoServiceTest {
 
     @Test
     void updateApiInfo() {
+        UpdateApiInfoPO updateApiInfoPO = new UpdateApiInfoPO();
+        updateApiInfoPO.setApiId("1800348827556278272");
+        updateApiInfoPO.setApiName("我的名字");
+        updateApiInfoPO.setApiUrl("未知");
+        apiInfoService.updateApiInfo(updateApiInfoPO);
     }
 
     @Test
     void deleteApiInfo() {
+        apiInfoService.deleteApiInfo("1800348827556278272");
     }
 
     @Test
     void pageQueryApiInfo() {
+        PageQueryApiInfoPO pageQueryApiInfoPO = new PageQueryApiInfoPO();
+        pageQueryApiInfoPO.setCurrentPage(1);
+        pageQueryApiInfoPO.setPageSize(10);
+        IPage<ApiInfoVO> apiInfoVOIPage = apiInfoService.pageQueryApiInfo(pageQueryApiInfoPO);
+        System.out.println(JSONUtil.toJsonPrettyStr(apiInfoVOIPage));
     }
 }

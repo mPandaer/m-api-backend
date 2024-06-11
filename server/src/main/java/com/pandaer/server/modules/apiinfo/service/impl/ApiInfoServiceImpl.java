@@ -3,10 +3,14 @@ package com.pandaer.server.modules.apiinfo.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pandaer.basic.exception.BusinessException;
 import com.pandaer.basic.resp.IResponseCode;
@@ -21,6 +25,7 @@ import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import static com.pandaer.server.modules.apiinfo.resp.ApiInfoRespCode.*;
@@ -37,7 +42,6 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
      * 添加接口信息
      * 1. 校验参数 尤其是那几个JSON格式的字符串
      * 2. 校验通过后，直接入库
-     *
      * @param po
      */
     @Override
@@ -55,19 +59,76 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
         }
     }
 
+    /**
+     * 更新接口信息
+     * 1. 校验参数
+     * 2. 根据ID判断接口信息是否存在
+     * 3. 更新值
+     * @param po
+     */
     @Override
     public void updateApiInfo(UpdateApiInfoPO po) {
+        if (ObjUtil.isNull(po)) {
+            throw new BusinessException(UPDATE_API_INFO_PARAMS_EMPTY);
+        }
+        //校验格式
+        if (StrUtil.isNotEmpty(po.getApiReqHeader())) {
+            validApiReqHeaderFormat(po.getApiReqHeader());
+        }
+        if (StrUtil.isNotEmpty(po.getApiReqParams())) {
+            validApiReqParamsFormat(po.getApiReqParams());
+        }
+        if (StrUtil.isNotEmpty(po.getApiRespDesc())) {
+            validApiRespDescFormat(po.getApiRespDesc());
+        }
+
+        String apiId = po.getApiId();
+        ApiInfo entity = getById(apiId);
+        if (ObjUtil.isNull(entity)) {
+            throw new BusinessException(API_INFO_NOT_EXIST);
+        }
+        BeanUtil.copyProperties(po,entity);
+        if (!updateById(entity)) {
+            throw new BusinessException(UPDATE_API_INFO_FAIL);
+        }
 
     }
 
+    /**
+     * 逻辑删除接口信息
+     * 根据apiId删除接口信息
+     * @param apiId
+     */
     @Override
     public void deleteApiInfo(String apiId) {
-
+        if (!removeById(apiId)) {
+            throw new BusinessException(DELETE_API_INFO_FAIL);
+        }
     }
 
     @Override
     public IPage<ApiInfoVO> pageQueryApiInfo(PageQueryApiInfoPO po) {
-        return null;
+        if (ObjUtil.isNull(po)) {
+            throw new BusinessException(PAGE_QUERY_API_INFO_PARAMS_EMPTY);
+        }
+        LambdaQueryWrapper<ApiInfo> query = Wrappers.lambdaQuery();
+        if (ObjUtil.isNotEmpty(po.getApiId())) {
+            query.eq(ApiInfo::getApiId,po.getApiId());
+        }
+        if (ObjUtil.isNotEmpty(po.getApiName())) {
+            query.eq(ApiInfo::getApiName,po.getApiName());
+        }
+        Page<ApiInfo> page = new Page<>();
+        page.setCurrent(po.getCurrentPage());
+        page.setSize(po.getPageSize());
+
+        Page<ApiInfo> infoPage = page(page);
+        List<ApiInfoVO> voList = infoPage.getRecords().stream().map(item -> BeanUtil.toBean(item, ApiInfoVO.class)).toList();
+
+        Page<ApiInfoVO> voPage = new Page<>();
+        BeanUtil.copyProperties(infoPage,voPage,"records");
+        voPage.setRecords(voList);
+        return voPage;
     }
 
 

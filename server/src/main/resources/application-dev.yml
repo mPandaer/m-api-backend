@@ -17,6 +17,8 @@ spring:
 # MyBatis-Plus相关配置
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # springdoc-openapi项目配置
 springdoc:

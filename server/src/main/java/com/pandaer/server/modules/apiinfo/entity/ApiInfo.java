@@ -2,6 +2,7 @@ package com.pandaer.server.modules.apiinfo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serial;
@@ -78,6 +79,10 @@ public class ApiInfo implements Serializable {
      */
     @TableField(value = "api_resp_sample")
     private String apiRespSample;
+
+    @TableLogic(value = "0",delval = "1")
+    @TableField(value = "is_delete")
+    private Integer isDelete;
 
     /**
      * 创建时间
