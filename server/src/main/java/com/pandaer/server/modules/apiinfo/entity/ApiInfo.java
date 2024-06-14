@@ -33,6 +33,12 @@ public class ApiInfo implements Serializable {
     private String apiUrl;
 
     /**
+     * 接口状态
+     */
+    @TableField(value = "api_status")
+    private String apiStatus;
+
+    /**
      * 接口的请求方式
      */
     @TableField(value = "api_req_method")

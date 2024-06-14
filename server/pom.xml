@@ -53,6 +53,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.pandaer</groupId>
+            <artifactId>api-client-sdk</artifactId>
+            <version>0.0.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -8,6 +8,7 @@ import com.pandaer.server.modules.apiinfo.service.ApiInfoService;
 import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
 import com.pandaer.web.resp.ComResp;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +48,20 @@ public class ApiInfoController {
         IPage<ApiInfoVO> page = apiInfoService.pageQueryApiInfo(po);
         return ComResp.success(page);
     }
+
+    @Operation(summary = "上线接口")
+    @GetMapping("/online")
+    public ComResp onlineApi(String apiId) {
+        apiInfoService.apiOnline(apiId);
+        return ComResp.success();
+    }
+
+    @Operation(summary = "下线接口")
+    @GetMapping("/offline")
+    public ComResp offlineApi(String apiId) {
+        apiInfoService.apiOffline(apiId);
+        return ComResp.success();
+    }
+
 
 }

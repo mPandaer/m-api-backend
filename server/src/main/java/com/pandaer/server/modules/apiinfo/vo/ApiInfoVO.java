@@ -21,6 +21,9 @@ public class ApiInfoVO {
     @Schema(description = "接口地址")
     private String apiUrl;
 
+    @Schema(description = "接口状态")
+    private String apiStatus;
+
     @Schema(description = "接口请求方法")
     private String apiReqMethod;
 

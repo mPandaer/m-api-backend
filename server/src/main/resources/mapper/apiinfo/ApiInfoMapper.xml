@@ -8,6 +8,7 @@
             <id property="apiId" column="api_id" jdbcType="VARCHAR"/>
             <result property="apiName" column="api_name" jdbcType="VARCHAR"/>
             <result property="apiUrl" column="api_url" jdbcType="VARCHAR"/>
+            <result property="apiStatus" column="api_status" jdbcType="VARCHAR"/>
             <result property="apiReqMethod" column="api_req_method" jdbcType="VARCHAR"/>
             <result property="apiRespType" column="api_resp_type" jdbcType="VARCHAR"/>
             <result property="apiDesc" column="api_desc" jdbcType="VARCHAR"/>
@@ -20,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        api_id,api_name,api_url,
+        api_id,api_name,api_url,api_status,
         api_req_method,api_resp_type,api_desc,
         api_req_header,api_req_params,api_resp_desc,
         api_resp_sample,create_time,update_time

@@ -15,14 +15,32 @@ public interface ApiInfoService extends IService<ApiInfo> {
 
     /**
      * 增加接口信息
-     * @param po
      */
     void addApiInfo(AddApiInfoPO po);
 
+    /**
+     * 更新接口信息
+     */
     void updateApiInfo(UpdateApiInfoPO po);
 
+    /**
+     * 删除接口信息
+     */
     void deleteApiInfo(String apiIds);
 
+    /**
+     * 分页条件查询接口信息
+     */
     IPage<ApiInfoVO> pageQueryApiInfo(PageQueryApiInfoPO po);
+
+    /**
+     * 上线接口
+     */
+    void apiOnline(String apiId);
+
+    /**
+     * 下线接口
+     */
+    void apiOffline(String apiId);
 
 }

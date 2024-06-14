@@ -1,7 +1,6 @@
 package com.pandaer.server.modules.apiinfo.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -12,16 +11,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pandaer.apiclientsdk.client.ApiClient;
 import com.pandaer.basic.exception.BusinessException;
 import com.pandaer.basic.resp.IResponseCode;
 import com.pandaer.basic.tools.IDTool;
 import com.pandaer.server.modules.apiinfo.entity.ApiInfo;
+import com.pandaer.server.modules.apiinfo.enums.ApiInfoStatus;
 import com.pandaer.server.modules.apiinfo.po.AddApiInfoPO;
 import com.pandaer.server.modules.apiinfo.po.PageQueryApiInfoPO;
 import com.pandaer.server.modules.apiinfo.po.UpdateApiInfoPO;
 import com.pandaer.server.modules.apiinfo.service.ApiInfoService;
 import com.pandaer.server.modules.apiinfo.mapper.ApiInfoMapper;
 import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
+import jakarta.annotation.Resource;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +41,13 @@ import static com.pandaer.server.modules.apiinfo.resp.ApiInfoRespCode.*;
 @Service
 public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> implements ApiInfoService {
 
+    @Resource
+    private ApiClient apiClient;
 
     /**
      * 添加接口信息
      * 1. 校验参数 尤其是那几个JSON格式的字符串
      * 2. 校验通过后，直接入库
-     * @param po
      */
     @Override
     public void addApiInfo(AddApiInfoPO po) {
@@ -66,7 +69,6 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
      * 1. 校验参数
      * 2. 根据ID判断接口信息是否存在
      * 3. 更新值
-     * @param po
      */
     @Override
     public void updateApiInfo(UpdateApiInfoPO po) {
@@ -99,7 +101,6 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
     /**
      * 逻辑删除接口信息
      * 根据apiId删除接口信息
-     * @param apiIds
      */
     @Transactional
     @Override
@@ -136,6 +137,56 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
     }
 
 
+    /**
+     * 上线接口
+     * 1. 校验参数
+     * 2. 判断接受是否存在
+     * 3. 判断接口是否可以调用
+     * 4. 修改接口信息状态
+     * @param apiId 接口ID
+     */
+    @Override
+    public void apiOnline(String apiId) {
+        if (StrUtil.isEmpty(apiId)) {
+            throw new BusinessException(API_INFO_ID_EMPTY);
+        }
+        ApiInfo entity = getById(apiId);
+        if (entity == null) {
+            throw new BusinessException(API_INFO_NOT_EXIST);
+        }
+        //todo 判断接口是否可以调用
+        entity.setApiStatus(ApiInfoStatus.ENABLE.getValue());
+        if (!updateById(entity)) {
+            throw new BusinessException(ONLINE_API_INFO_FAIL);
+        }
+    }
+
+
+    /**
+     * 下线接口
+     * 1. 校验参数
+     * 2. 判断接受是否存在
+     * 3. 修改接口信息状态
+     * @param apiId 接口信息ID
+     */
+    @Override
+    public void apiOffline(String apiId) {
+        if (StrUtil.isEmpty(apiId)) {
+            throw new BusinessException(API_INFO_ID_EMPTY);
+        }
+        ApiInfo entity = getById(apiId);
+        if (entity == null) {
+            throw new BusinessException(API_INFO_NOT_EXIST);
+        }
+        entity.setApiStatus(ApiInfoStatus.DISABLE.getValue());
+        if (!updateById(entity)) {
+            throw new BusinessException(OFFLINE_API_INFO_FAIL);
+        }
+    }
+
+
+    /*===================================================private方法==============================================================*/
+
 
     /**
      * 检验接口信息的JSON格式的通用方法
@@ -163,8 +214,6 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
 
     /**
      * 校验接口信息响应体说明的JSON格式
-     *
-     * @param apiRespDesc
      */
     private void validApiRespDescFormat(String apiRespDesc) {
         validApiInfoFormat(apiRespDesc, (obj) -> !obj.containsKey("name") || !obj.containsKey("type") || !obj.containsKey("desc"), VALID_API_RESP_DESC_FORMAT_FAIL);
@@ -173,8 +222,6 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
 
     /**
      * 校验接口信息请求参数的JSON格式
-     *
-     * @param apiReqParams
      */
     private void validApiReqParamsFormat(String apiReqParams) {
 
@@ -183,8 +230,6 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
 
     /**
      * 校验接口信息请求头的JSON格式
-     *
-     * @param apiReqHeader
      */
     private void validApiReqHeaderFormat(String apiReqHeader) {
         validApiInfoFormat(apiReqHeader, (obj) -> !obj.containsKey("name") || !obj.containsKey("value"), VALID_API_REQ_HEADER_FORMAT_FAIL);
