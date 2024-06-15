@@ -5,28 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.pandaer</groupId>
-        <artifactId>m-api-backend</artifactId>
+        <artifactId>framework-cache</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-
-    <artifactId>framework</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>framework-basic</module>
-        <module>framework-web</module>
-        <module>framework-orm</module>
-        <module>framework-validation</module>
-        <module>framework-api-doc</module>
-        <module>framework-cache</module>
-    </modules>
+    <artifactId>framework-cache-redis</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <framework.version>1.0-SNAPSHOT</framework.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

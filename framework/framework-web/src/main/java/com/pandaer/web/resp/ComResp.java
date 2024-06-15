@@ -50,6 +50,11 @@ public class ComResp {
         return new ComResp(ERROR.getCode(), message, null);
     }
 
+    public static ComResp error(Integer code,String message) {
+        return new ComResp(code, message, null);
+    }
+
+
     public static ComResp error(IResponseCode respCode) {
         return new ComResp(respCode.getCode(), respCode.getMessage(), null);
     }

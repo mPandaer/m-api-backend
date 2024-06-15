@@ -27,14 +27,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ComResp> handleBusinessException(BusinessException exception) {
         log.error("业务异常: ",exception);
-        ComResp error = ComResp.error(DefaultRespCode.BUSINESS_ERROR);
+        ComResp error = ComResp.error(exception.getCode(),exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(FrameworkException.class)
-    public ResponseEntity<ComResp> handleFrameworkException(BusinessException exception) {
+    public ResponseEntity<ComResp> handleFrameworkException(FrameworkException exception) {
         log.error("框架异常: ",exception);
-        ComResp error = ComResp.error(DefaultRespCode.FRAMEWORK_ERROR);
+        ComResp error = ComResp.error(exception.getCode(),exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<ComResp> handleAuthException(AuthException exception) {
         log.error("权限异常: ",exception);
-        ComResp error = ComResp.error(exception.getMessage());
+        ComResp error = ComResp.error(exception.getCode(),exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 

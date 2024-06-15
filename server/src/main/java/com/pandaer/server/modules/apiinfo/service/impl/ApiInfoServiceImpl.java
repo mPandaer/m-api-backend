@@ -16,6 +16,7 @@ import com.pandaer.apiclientsdk.client.ApiClient;
 import com.pandaer.basic.exception.BusinessException;
 import com.pandaer.basic.resp.IResponseCode;
 import com.pandaer.basic.tools.IDTool;
+import com.pandaer.server.modules.apiinfo.config.OnlineDebugProperties;
 import com.pandaer.server.modules.apiinfo.entity.ApiInfo;
 import com.pandaer.server.modules.apiinfo.enums.ApiInfoStatus;
 import com.pandaer.server.modules.apiinfo.po.AddApiInfoPO;
@@ -31,11 +32,13 @@ import com.pandaer.server.modules.user.service.UserService;
 import com.pandaer.server.utils.LoginIDUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static com.pandaer.server.modules.apiinfo.resp.ApiInfoRespCode.*;
@@ -52,6 +55,12 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedisTemplate<String,Object> jsonRedisTemplate;
+
+    @Resource
+    private OnlineDebugProperties onlineDebugProperties;
 
     /**
      * 添加接口信息
@@ -163,7 +172,7 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
         if (entity == null) {
             throw new BusinessException(API_INFO_NOT_EXIST);
         }
-        //todo 判断接口是否可以调用
+
         entity.setApiStatus(ApiInfoStatus.ENABLE.getValue());
         if (!updateById(entity)) {
             throw new BusinessException(ONLINE_API_INFO_FAIL);
@@ -194,7 +203,7 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
     }
 
     /**
-     * 实现第三方API的调用
+     * 在线调试  实现第三方API的调用
      * 1. 判断接口是否存在
      * 2. 判断用户是否开启了这个接口
      * 3. 校验第三方接口参数是否正确
@@ -215,11 +224,11 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
         }
         String userId = LoginIDUtil.getLoginID();
         User loginedUser = userService.getById(userId);
-        //todo 校验用户是否开通了这个权限 可以设置试用次数为10次 目前只要用户存在就算有权限
+        incrementApiCount(po.getApiId(),LoginIDUtil.getLoginID());
         if (loginedUser == null) {
             throw new BusinessException(CALL_API_USER_NOT_EXIST);
         }
-        //todo 校验接口中的参数是否满足，目前只校验 url以及method
+        //todo 校验接口中的参数是否满足，目前只校验 url以及method 后期看看是否可以校验其他参数
         if (ObjectUtil.notEqual(po.getUrl(),entity.getApiUrl()) || ObjectUtil.notEqual(po.getMethod().toUpperCase(),entity.getApiReqMethod().toUpperCase())) {
             throw new BusinessException(VALID_THIRD_API_PARAM_FAIL);
         }
@@ -227,14 +236,32 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
         try {
             resp = doCallApi(po);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("API调用异常",e);
+            throw new BusinessException(CALL_API_FAIL);
         }
-
         //返回响应实体
         ApiResponseVO apiResponseVO = new ApiResponseVO();
         apiResponseVO.setData(resp);
         return apiResponseVO;
 
+    }
+
+    /**
+     * 增加调用次数并在达到调用限制时，抛出异常
+     * @param apiId
+     * @param loginID
+     */
+    private void incrementApiCount(String apiId, String loginID) {
+        String key = String.format(onlineDebugProperties.getCacheKeyTemplate(),loginID,apiId);
+        Integer count = (Integer) jsonRedisTemplate.opsForValue().get(key);
+        if (count == null) {
+            jsonRedisTemplate.opsForValue().set(key,1,onlineDebugProperties.getExpiredTime(), TimeUnit.SECONDS);
+            return;
+        }
+        if (count >= onlineDebugProperties.getMaxCallCount()) {
+            throw new BusinessException(CALL_API_MAX_COUNT);
+        }
+        jsonRedisTemplate.opsForValue().set(key,count + 1,onlineDebugProperties.getExpiredTime(), TimeUnit.SECONDS);
     }
 
     /**

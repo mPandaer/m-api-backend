@@ -3,6 +3,9 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/framework/framework-api-doc/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/framework-basic/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework/framework-cache/framework-cache-redis/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework/framework-cache/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework/framework-cache/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/framework-orm/framework-mybatis-plus/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/framework-orm/framework-orm-mybatis-plus/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/framework-orm/mybatis-plus/src/main/java" charset="UTF-8" />

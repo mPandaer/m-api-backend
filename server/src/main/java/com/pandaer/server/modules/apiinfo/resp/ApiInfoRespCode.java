@@ -17,6 +17,8 @@ public enum ApiInfoRespCode implements IResponseCode {
     DELETE_API_INFO_FAIL(3502,"删除接口信息失败"),
     ONLINE_API_INFO_FAIL(3503,"上线接口异常"),
     OFFLINE_API_INFO_FAIL(3503,"下线接口异常"),
+    CALL_API_FAIL(3504,"调用API异常"),
+    CALL_API_MAX_COUNT(3505,"在线调用达到限制"),
 
 
     API_INFO_NOT_EXIST(3700,"接口信息不存在"),
