@@ -9,6 +9,8 @@
             <result property="userAccount" column="user_account" jdbcType="VARCHAR"/>
             <result property="userName" column="user_name" jdbcType="VARCHAR"/>
             <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+            <result property="accessKey" column="access_key" jdbcType="VARCHAR"/>
+            <result property="secretKey" column="secret_key" jdbcType="VARCHAR"/>
             <result property="userAvatarUrl" column="user_avatar_url" jdbcType="VARCHAR"/>
             <result property="userRole" column="user_role" jdbcType="VARCHAR"/>
             <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>

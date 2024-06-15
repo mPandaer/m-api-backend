@@ -42,5 +42,5 @@ knife4j:
 api:
   client:
     sdk:
-      access-key: user001
+      access-key: haha
       secret-key: qwertyui

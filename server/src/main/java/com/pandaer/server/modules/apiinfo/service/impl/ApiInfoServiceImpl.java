@@ -2,6 +2,7 @@ package com.pandaer.server.modules.apiinfo.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -18,18 +19,23 @@ import com.pandaer.basic.tools.IDTool;
 import com.pandaer.server.modules.apiinfo.entity.ApiInfo;
 import com.pandaer.server.modules.apiinfo.enums.ApiInfoStatus;
 import com.pandaer.server.modules.apiinfo.po.AddApiInfoPO;
+import com.pandaer.server.modules.apiinfo.po.ApiRequestPO;
 import com.pandaer.server.modules.apiinfo.po.PageQueryApiInfoPO;
 import com.pandaer.server.modules.apiinfo.po.UpdateApiInfoPO;
 import com.pandaer.server.modules.apiinfo.service.ApiInfoService;
 import com.pandaer.server.modules.apiinfo.mapper.ApiInfoMapper;
 import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
+import com.pandaer.server.modules.apiinfo.vo.ApiResponseVO;
+import com.pandaer.server.modules.user.entity.User;
+import com.pandaer.server.modules.user.service.UserService;
+import com.pandaer.server.utils.LoginIDUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static com.pandaer.server.modules.apiinfo.resp.ApiInfoRespCode.*;
@@ -43,6 +49,9 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
 
     @Resource
     private ApiClient apiClient;
+
+    @Resource
+    private UserService userService;
 
     /**
      * 添加接口信息
@@ -181,6 +190,74 @@ public class ApiInfoServiceImpl extends ServiceImpl<ApiInfoMapper, ApiInfo> impl
         entity.setApiStatus(ApiInfoStatus.DISABLE.getValue());
         if (!updateById(entity)) {
             throw new BusinessException(OFFLINE_API_INFO_FAIL);
+        }
+    }
+
+    /**
+     * 实现第三方API的调用
+     * 1. 判断接口是否存在
+     * 2. 判断用户是否开启了这个接口
+     * 3. 校验第三方接口参数是否正确
+     * 4. 利用自定义的SDK进行调用
+     * 5. 封装返回结果
+     */
+    @Override
+    public ApiResponseVO callApi(ApiRequestPO po) {
+        if (po == null) {
+            throw new BusinessException(CALL_API_EMPTY);
+        }
+        if (StrUtil.isEmpty(po.getApiId())) {
+            throw new BusinessException(API_INFO_ID_EMPTY);
+        }
+        ApiInfo entity = getById(po.getApiId());
+        if (entity == null) {
+            throw new BusinessException(API_INFO_NOT_EXIST);
+        }
+        String userId = LoginIDUtil.getLoginID();
+        User loginedUser = userService.getById(userId);
+        //todo 校验用户是否开通了这个权限 可以设置试用次数为10次 目前只要用户存在就算有权限
+        if (loginedUser == null) {
+            throw new BusinessException(CALL_API_USER_NOT_EXIST);
+        }
+        //todo 校验接口中的参数是否满足，目前只校验 url以及method
+        if (ObjectUtil.notEqual(po.getUrl(),entity.getApiUrl()) || ObjectUtil.notEqual(po.getMethod().toUpperCase(),entity.getApiReqMethod().toUpperCase())) {
+            throw new BusinessException(VALID_THIRD_API_PARAM_FAIL);
+        }
+        String resp = null;
+        try {
+            resp = doCallApi(po);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        //返回响应实体
+        ApiResponseVO apiResponseVO = new ApiResponseVO();
+        apiResponseVO.setData(resp);
+        return apiResponseVO;
+
+    }
+
+    /**
+     * 发起第三方接口调用
+     * @param po
+     * @return
+     */
+    private String doCallApi(ApiRequestPO po) throws IOException {
+        //todo 对接口地址暂时硬编码
+        String realUrl = po.getUrl().replace("http://api.pandaer.com","http://localhost:9998");
+        //组装 请求参数
+        Map<String,String> paramMap = new HashMap<>();
+        if (StrUtil.isNotEmpty(po.getParams())) {
+            String[] split = po.getParams().split("&");
+            Arrays.stream(split).forEach((pair) -> {
+                String[] entry = pair.split("=");
+                paramMap.put(entry[0],entry[1]);
+            });
+        }
+        if (po.getMethod().equalsIgnoreCase("GET")) {
+            return apiClient.get(realUrl,paramMap);
+        }else {
+            return apiClient.post(realUrl,paramMap,po.getBody());
         }
     }
 

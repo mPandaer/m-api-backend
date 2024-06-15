@@ -38,6 +38,12 @@ public class User implements Serializable {
     @TableField(value = "user_password")
     private String userPassword;
 
+    @TableField(value = "access_key")
+    private String accessKey;
+
+    @TableField(value = "secret_key")
+    private String secretKey;
+
     /**
      * 用户头像链接
      */

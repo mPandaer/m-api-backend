@@ -1,5 +1,6 @@
 package com.pandaer.server.modules.user.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.pandaer.server.serializer.LocalDateTimeSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,11 @@ public class UserVO {
     @Schema(description = "用户角色")
     private String userRole;
 
+    @Schema(description = "AccessKey")
+    private String accessKey;
+
+    @Schema(description = "SecretKey")
+    private String secretKey;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Schema(description = "用户创建时间")

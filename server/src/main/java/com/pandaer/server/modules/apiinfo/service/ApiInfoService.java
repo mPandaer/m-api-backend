@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.pandaer.server.modules.apiinfo.entity.ApiInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pandaer.server.modules.apiinfo.po.AddApiInfoPO;
+import com.pandaer.server.modules.apiinfo.po.ApiRequestPO;
 import com.pandaer.server.modules.apiinfo.po.PageQueryApiInfoPO;
 import com.pandaer.server.modules.apiinfo.po.UpdateApiInfoPO;
 import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
+import com.pandaer.server.modules.apiinfo.vo.ApiResponseVO;
 
 /**
  * API接口信息服务
@@ -42,5 +44,10 @@ public interface ApiInfoService extends IService<ApiInfo> {
      * 下线接口
      */
     void apiOffline(String apiId);
+
+    /**
+     * 调用接口
+     */
+    ApiResponseVO callApi(ApiRequestPO po);
 
 }

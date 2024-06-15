@@ -2,10 +2,12 @@ package com.pandaer.server.modules.apiinfo.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.pandaer.server.modules.apiinfo.po.AddApiInfoPO;
+import com.pandaer.server.modules.apiinfo.po.ApiRequestPO;
 import com.pandaer.server.modules.apiinfo.po.PageQueryApiInfoPO;
 import com.pandaer.server.modules.apiinfo.po.UpdateApiInfoPO;
 import com.pandaer.server.modules.apiinfo.service.ApiInfoService;
 import com.pandaer.server.modules.apiinfo.vo.ApiInfoVO;
+import com.pandaer.server.modules.apiinfo.vo.ApiResponseVO;
 import com.pandaer.web.resp.ComResp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -61,6 +63,13 @@ public class ApiInfoController {
     public ComResp offlineApi(String apiId) {
         apiInfoService.apiOffline(apiId);
         return ComResp.success();
+    }
+
+    @Operation(summary = "调用第三方接口")
+    @PostMapping("/call")
+    public ComResp callApi(@RequestBody ApiRequestPO po) {
+        ApiResponseVO apiResponseVO = apiInfoService.callApi(po);
+        return ComResp.success(apiResponseVO.getData());
     }
 
 

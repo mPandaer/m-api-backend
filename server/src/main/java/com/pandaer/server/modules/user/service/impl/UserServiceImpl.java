@@ -3,6 +3,7 @@ package com.pandaer.server.modules.user.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -80,9 +81,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setUserName(po.getUserAccount());
         user.setUserPassword(PasswdTool.genPasswd(po.getUserPassword()));
         user.setUserAvatarUrl("");
+        //todo 生成API KEY 目前使用方法提供，后续改造成Service
+        assembleApiKey(user);
         if (!save(user)) {
             throw new BusinessException(REGISTER_FAIL);
         }
+    }
+
+    /**
+     * 生成API KEY
+     * @param user
+     */
+    private void assembleApiKey(User user) {
+        String accessKey = JwtTool.genToken(MapUtil.builder("userId", user.getUserId()).build());
+        String secretKey = RandomUtil.randomString(16);
+        user.setAccessKey(accessKey);
+        user.setSecretKey(secretKey);
     }
 
     @Override
